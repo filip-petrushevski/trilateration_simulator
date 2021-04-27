@@ -147,7 +147,7 @@ public class IterativeTrilaterationSimulator {
         Map<Node, Double> neighborDistances = allDistances.get(node);
         Set<Node> neighbors = neighborDistances.keySet();
         List<Node> closestAnchorNeighbors = getClosestAnchorNeighbors(node, neighbors);
-        if (closestAnchorNeighbors.size() >= 3) {
+        if (closestAnchorNeighbors.size() >= 4) {
             locate(node, closestAnchorNeighbors);
         }
     }
@@ -170,16 +170,16 @@ public class IterativeTrilaterationSimulator {
                 .collect(Collectors.toList());
     }
 
-    private static void locate(Node locatedNode, List<Node> closestThreeAnchorNodes) {
-        double[][] positions = getPositions(closestThreeAnchorNodes);
-        double[] distances = getDistancesWithError(closestThreeAnchorNodes, locatedNode);
+    private static void locate(Node locatedNode, List<Node> closestFourAnchorNodes) {
+        double[][] positions = getPositions(closestFourAnchorNodes);
+        double[] distances = getDistancesWithError(closestFourAnchorNodes, locatedNode);
         NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
         Optimum optimum = solver.solve();
         double[] predictedCoordinates = optimum.getPoint().toArray();
         locatedNode.predictedX = predictedCoordinates[0];
         locatedNode.predictedY = predictedCoordinates[1];
         locatedNode.predictedZ = predictedCoordinates[2];
-        locatedNode.nonRelevanceLevel = 1 + closestThreeAnchorNodes.stream()
+        locatedNode.nonRelevanceLevel = 1 + closestFourAnchorNodes.stream()
                 .mapToInt(anchorNode -> anchorNode.nonRelevanceLevel)
                 .sum();
     }

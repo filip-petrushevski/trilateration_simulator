@@ -126,16 +126,16 @@ public class NonIterativeTrilaterationSimulator {
         List<Node> closestAnchorNeighbors = neighbors.stream()
                 .filter(node1 -> node1.isAnchor)
                 .sorted(Comparator.comparing(n -> distance(n, node)))
-                .limit(3)
+                .limit(4)
                 .collect(Collectors.toList());
-        if(closestAnchorNeighbors.size() >= 3) {
+        if(closestAnchorNeighbors.size() >= 4) {
             locate(node, closestAnchorNeighbors);
         }
     }
 
-    private static void locate(Node locatedNode, List<Node> closestThreeAnchorNodes) {
-        double[][] positions = getPositions(closestThreeAnchorNodes);
-        double[] distances = getDistancesWithError(closestThreeAnchorNodes, locatedNode);
+    private static void locate(Node locatedNode, List<Node> closestFourAnchorNodes) {
+        double[][] positions = getPositions(closestFourAnchorNodes);
+        double[] distances = getDistancesWithError(closestFourAnchorNodes, locatedNode);
         NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(
                 new TrilaterationFunction(positions, distances), new LevenbergMarquardtOptimizer());
         Optimum optimum = solver.solve();
